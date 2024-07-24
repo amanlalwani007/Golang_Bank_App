@@ -39,6 +39,9 @@ make  dropdb
 
 ## Step 5: Run migrations to do changes 
 ```
-
+migrate -path db/migration --database "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable"  -verbose up
 ```
 
+## Step 6: Generate CRUD golang code from SQL 
+```
+```
