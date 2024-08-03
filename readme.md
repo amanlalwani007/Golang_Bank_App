@@ -1,4 +1,5 @@
 #  Udemy Bank Golang Project 
+## Drive link :- https://docs.google.com/document/d/1cevTM2nU3cP_p-sTxdX99uJPhR2hKw2ulVHj-T4PpTM/edit?usp=sharing
 ## Step 1 : Design Db Schema 
 ```
 Go to Dbdiagrams  io Design a Schema 
@@ -44,4 +45,7 @@ migrate -path db/migration --database "postgresql://root:secret@localhost:5432/s
 
 ## Step 6: Generate CRUD golang code from SQL 
 ```
+Using Golang GORM library,GORM is slower 
+SQLX  library 
+SQLC : fast and wasy to use  
 ```
