@@ -16,10 +16,55 @@ var (
 	ErrBatchAlreadyClosed = errors.New("batch already closed")
 )
 
+const deleteAccount = `-- name: DeleteAccount :batchexec
+DELETE FROM account
+WHERE id = $1
+`
+
+type DeleteAccountBatchResults struct {
+	br     pgx.BatchResults
+	tot    int
+	closed bool
+}
+
+func (q *Queries) DeleteAccount(ctx context.Context, id []int64) *DeleteAccountBatchResults {
+	batch := &pgx.Batch{}
+	for _, a := range id {
+		vals := []interface{}{
+			a,
+		}
+		batch.Queue(deleteAccount, vals...)
+	}
+	br := q.db.SendBatch(ctx, batch)
+	return &DeleteAccountBatchResults{br, len(id), false}
+}
+
+func (b *DeleteAccountBatchResults) Exec(f func(int, error)) {
+	defer b.br.Close()
+	for t := 0; t < b.tot; t++ {
+		if b.closed {
+			if f != nil {
+				f(t, ErrBatchAlreadyClosed)
+			}
+			continue
+		}
+		_, err := b.br.Exec()
+		if f != nil {
+			f(t, err)
+		}
+	}
+}
+
+func (b *DeleteAccountBatchResults) Close() error {
+	b.closed = true
+	return b.br.Close()
+}
+
 const updateAccount = `-- name: UpdateAccount :batchexec
 UPDATE account
 SET balance = $2
 WHERE id = $1
+RETURNING id, owner, balance, currency, created_at
 `
 
 type UpdateAccountBatchResults struct {

@@ -17,4 +17,10 @@ select * from account order by id LIMIT $1 OFFSET $2;
 -- name: UpdateAccount :batchexec
 UPDATE account
 SET balance = $2
+WHERE id = $1
+RETURNING *;
+
+
+-- name: DeleteAccount :batchexec
+DELETE FROM account
 WHERE id = $1;
